@@ -1,8 +1,8 @@
 import ServiceBase from '../ServiceBase';
 // ========================================
 
-import PreprocessRouter from '../../ws-routers/PreprocessRouter';
-import ChannelRouter from '../../ws-routers/ChannelRouter';
+import PreprocessRouter from '~/ws-routers/PreprocessRouter';
+import ChannelRouter from '~/ws-routers/ChannelRouter';
 
 export default class WsRouterManager extends ServiceBase {
   static $name = 'wsRouterManager';

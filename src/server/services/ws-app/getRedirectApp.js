@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import { serverEnvName, httpPort } from '../../core/config';
+import { serverEnvName, httpPort } from 'config';
 
 let redirect = `<script>window.location = "http://" + window.location.hostname + ":${httpPort}";</script>`;
 if (serverEnvName === 'linuxDocker') {

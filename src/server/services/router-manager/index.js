@@ -1,8 +1,8 @@
 import ServiceBase from '../ServiceBase';
 //========================================
-import MainRouter from '../../routers/MainRouter';
-import SessionRouter from '../../routers/SessionRouter';
-import UserRouter from '../../routers/UserRouter';
+import MainRouter from '~/routers/MainRouter';
+import SessionRouter from '~/routers/SessionRouter';
+import UserRouter from '~/routers/UserRouter';
 
 export default class RouterManager extends ServiceBase {
   static $name = 'routerManager';

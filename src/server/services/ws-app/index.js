@@ -4,7 +4,7 @@ import getRedirectApp from './getRedirectApp';
 import { runWsServer } from './ws-server';
 import GenericRouter from './GenericRouter';
 import PeerClass from './PeerClass';
-import { wsPort, wssPort } from '../../common/core/config';
+import { wsPort, wssPort } from 'common/core/config';
 
 export default class WsApp extends ServiceBase {
   static $name = 'wsApp';
@@ -37,6 +37,34 @@ export default class WsApp extends ServiceBase {
     const httpRedirectApp = getRedirectApp(this.appConfig);
     return new Promise((resolve) => {
       runWsServer(httpRedirectApp, this.app, this.credentials, this.appConfig, resolve, wsPort, wssPort);
+    })
+    .then(({httpServer, httpsServer}) => {
+      this.httpServer = httpServer;
+      this.httpsServer = httpsServer;
+    });
+  }
+
+  onDestroy(){
+    return new Promise(resolve => {
+      if(!this.httpServer){
+        return ;
+      }
+      this.httpServer.shutdown(() => {
+        this.httpServer = null;
+        resolve();
+      });
+      return new Promise(resolve => {
+        if(!this.httpsServer){
+          return ;
+        }
+        this.httpsServer.shutdown(() => {
+          this.httpsServer = null;
+          resolve();
+        });
+      });
+    })
+    .then(() => {
+      console.log('Everything is cleanly shutdown.');
     });
   }
 }

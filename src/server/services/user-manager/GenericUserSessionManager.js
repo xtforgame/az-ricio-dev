@@ -1,6 +1,6 @@
 import { LoggedInUser, UserSessionManager } from 'login-session-mgr';
 import ChannelManager from './ChannelManager';
-import fakeUserManager from '../../utils/fakeUserManager';
+import fakeUserManager from '~/utils/fakeUserManager';
 
 export class UserInfo extends LoggedInUser {
   constructor({
