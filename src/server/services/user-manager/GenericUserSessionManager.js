@@ -72,6 +72,10 @@ export default class GenericUserSessionManager {
         logoutExistedOne();
       }),
     });
+
+    setInterval(() => {
+      this.debugReportPeerInfo();
+    }, 2000);
   }
 
   addPeer(rcPeer) {
@@ -139,12 +143,16 @@ export default class GenericUserSessionManager {
     return result;
   }
 
+  channelRemoveAllPeers(channel){
+    return this.chManager.removeAll(channel);
+  }
+
   isPeerInChannel(user, channel){
     return this.chManager.isInChannel(user, channel)
   }
 
   getPeerChannelList(user){
-    return this.chManager.getUserMetadata(user).map(value => value);
+    return (this.chManager.getUserMetadata(user) || []).map(value => value);
   }
 
   removePeer(rcPeer) {
@@ -172,5 +180,16 @@ export default class GenericUserSessionManager {
       return this.userSessionMgr.unexpectedLogout(sessionId, 'ConnectionLost');
     }
     return Promise.resolve();
+  }
+
+  debugReportPeerInfo(){
+    console.log('================ [debug] ReportPeerInfo ================');
+    console.log('================         Users          ================');
+    this.allPeers.forEach((rcPeer, key, map) => {
+      rcPeer.debugPrintProfile();
+    });
+    console.log('================        Channels        ================');
+    this.chManager.debugPrintProfile();
+    console.log('================ [debug] ReportPeerInfo ================');
   }
 }

@@ -19,7 +19,8 @@ export default class ChannelRouter extends RouterBase {
           },
           payload: {},
         },
-      }/*, { includeSender: true }*/);
+      }/*, { includeSender: true }*/)
+      .catch(e => {});
     });
   }
 
@@ -40,7 +41,8 @@ export default class ChannelRouter extends RouterBase {
           },
           payload: {},
         },
-      }/*, { includeSender: true }*/);
+      }/*, { includeSender: true }*/)
+      .catch(e => {});
     });
 
     user.leaveChannel(channels);
@@ -113,6 +115,9 @@ export default class ChannelRouter extends RouterBase {
 
     router.close('/', (ctx, next) => {
       let user = ctx.rcPeer.getUser();
+      if(!user){
+        return ;
+      }
       this.handleLeaveChannels(ctx, this.userSessionManager.getPeerChannelList(user));
       return next();
     });

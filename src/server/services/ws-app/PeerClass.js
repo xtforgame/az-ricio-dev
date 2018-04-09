@@ -1,6 +1,13 @@
 import RicioPeer from 'ricio/RicioPeer';
 
+let hashCounter = 0;
+
 export default class PeerClass extends RicioPeer {
+  constructor(...args){
+    super(...args);
+    this.hash = ++hashCounter;
+  }
+
   getUserId(){
     return this.session && this.session.user_id;
   }
@@ -12,7 +19,7 @@ export default class PeerClass extends RicioPeer {
 
   channelBroadcast = (channel, msg, options = {}) => {
     if(Array.isArray(channel)){
-      return channel.map(ch => this.channelBroadcast(ch, msg, options));
+      return Promise.all(channel.map(ch => this.channelBroadcast(ch, msg, options)));
     }
     let {
       includeSender = false,
@@ -32,8 +39,13 @@ export default class PeerClass extends RicioPeer {
 
     const userFilter = filter || (includeSender ? (u => u) : (u => u.uid !== myUserId));
 
-    return channelMetadata.map(u => u)
+    return Promise.all(channelMetadata.map(u => u)
       .filter(userFilter)
-      .map(user => user.send(msg));
+      .map(user => user.send(msg)));
   };
+
+  debugPrintProfile(){
+    let user = this.getUser();
+    console.log(`user: ${user ? /*user.uid*/ user.data.name : '<Unauthenticated>'} (hash: ${this.hash})`);
+  }
 }

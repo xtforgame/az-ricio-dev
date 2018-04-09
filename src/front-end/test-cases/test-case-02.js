@@ -64,6 +64,9 @@ function testCase() {
         return logout2()
       })
       .then(() => {
+        return promiseWait(3000);
+      })
+      .then(() => {
         return promiseWait(1000);
       })
       .then(() => logout1());
@@ -85,6 +88,9 @@ function testCase() {
       })
       .then(() => {
         return wsProtocol2.sendChannelMessage('s');
+      })
+      .then(() => {
+        return promiseWait(3000);
       })
       .then(() => {
         return logout2()
