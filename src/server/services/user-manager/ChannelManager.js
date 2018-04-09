@@ -1,6 +1,7 @@
 class ChannelMetadata {
-  constructor() {
+  constructor(options = {}) {
     this.users = new Map();
+    this.autoDestroy = options.autoDestroy;
 
     // For custom data
     this._data = {};
@@ -33,7 +34,7 @@ class ChannelMetadata {
   }
 
   get length(){
-    return Object.keys(this.users).length;
+    return this.users.size;
   }
 
   map(callback, thisArg){
@@ -94,13 +95,17 @@ export default class ChannelManager {
     this.userMap = {};
   }
 
-  join(user, channelArray){
+  join(user, channelArray, options = {}){
     if(Array.isArray(channelArray)){
-      return channelArray.map(channel => this.join(user, channel));
+      return channelArray.map(channel => this.join(user, channel, options));
     }
     const channel = channelArray;
+    const {
+      autoDestroy = true,
+    } = options;
+
     if(!this.channelMap[channel]){
-      this.channelMap[channel] = new ChannelMetadata();
+      this.channelMap[channel] = new ChannelMetadata({ autoDestroy });
     }
     this.channelMap[channel].add(user);
 
@@ -119,6 +124,9 @@ export default class ChannelManager {
     const channel = channelArray;
     if(this.channelMap[channel]){
       this.channelMap[channel].remove(user);
+      if(this.channelMap[channel].autoDestroy && !this.channelMap[channel].length){
+        delete this.channelMap[channel];
+      }
     }
 
     if(this.userMap[user.uid]){
@@ -148,12 +156,34 @@ export default class ChannelManager {
     return retval;
   }
 
+  removeAll(channel){
+    const channelMetadata = this.channelMap[channel];
+    if(!channelMetadata){
+      return channelMetadata;
+    }
+    channelMetadata.map(user => this.leave(user, channel));
+    return channelMetadata;
+  }
+
   getUserMetadata(user){
     return this.userMap[user.uid] = this.userMap[user.uid] || new UserMetadata();
   }
 
   getChannelMetadata(channel){
-    return this.channelMap[channel] = this.channelMap[channel] || new ChannelMetadata();
+    return this.channelMap[channel] = this.channelMap[channel];
+  }
+
+  debugPrintProfile(indent = ''){
+    Object.keys(this.channelMap).map(key => {
+      const room = this.channelMap[key];
+      if(!room){
+        return ;
+      }
+      console.log('Room :', key);
+      let users = [];
+      room.users.forEach(u => users.push(u));
+      console.log(' users :', users.map(u => `${u.data.name || ''}(id:${u.uid})`).join(', '));
+    });
   }
 }
 
