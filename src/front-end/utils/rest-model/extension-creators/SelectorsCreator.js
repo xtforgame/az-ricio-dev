@@ -41,7 +41,7 @@ const createSelectors = (names, baseSelector) => {
     makeSelectedResourceNodeSelector(),
     makeResourceSelectionSelector(),
     (node, selection) => {
-      if(node && node.byId && selection.id){
+      if(node && node.byId && selection.id != null){
         return node.byId[selection.id];
       }
       return null;

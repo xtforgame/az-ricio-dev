@@ -20,7 +20,16 @@ export default class ActionsCreator {
           actionTypeName: key,
         };
 
-        shared[methodConfig.name][key] = (data, urlParams = {}, otherParams = {}) => ({ type, data, urlParams, ...otherParams });
+        shared[methodConfig.name][key] = (
+          data,
+          urlParams = {},
+          otherParams = {}
+        ) => ({
+          type,
+          data,
+          urlParams,
+          ...otherParams,
+        });
         exposed[methodConfig.getActionName(arg)] = shared[methodConfig.name][key];
       });
     });

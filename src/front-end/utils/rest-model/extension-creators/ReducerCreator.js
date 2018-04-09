@@ -21,13 +21,13 @@ const deepMergeByPathArray= (state, action, { urlInfo }) => mergeFunc => {
 // ===============================
 
 const genSelectFunc = (method, { urlInfo }) => (state = {}, action) => {
-  if(action.data.urlParams === undefined){
+  if(action.urlParams === undefined){
     return {
       ...state,
       selection: null,
     };
   }
-  const pathArray = urlInfo.urlParamsToArray(action.data.urlParams);
+  const pathArray = urlInfo.urlParamsToArray(action.urlParams);
   return {
     ...state,
     selection: {
