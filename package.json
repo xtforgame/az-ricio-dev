@@ -63,6 +63,8 @@
     "redux": "^3.7.2",
     "redux-immutable": "^4.0.0",
     "redux-observable": "^0.16.0",
+    "redux-wait-for-action": "^0.0.7",
+    "reduxtful": "git+https://github.com/xtforgame/reduxtful.git#v0.1.0",
     "reselect": "^3.0.1",
     "rrw-module": "git+https://github.com/xtforgame/rrw-module#v0.1.2",
     "rxjs": "^5.4.3"

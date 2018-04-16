@@ -20,20 +20,6 @@ const makeUserSessionSelector = () => createSelector(
   }
 );
 
-const makeUserSessionCreateError = () => createSelector(
-  makeSessionHierarchySelector(),
-  (hierarchy) => {
-    return hierarchy && hierarchy.error && hierarchy.error.create;
-  }
-);
-
-const makeUserCreateError = () => createSelector(
-  makeUserHierarchySelector(),
-  (hierarchy) => {
-    return hierarchy && hierarchy.error && hierarchy.error.create;
-  }
-);
-
 const persistenceSelector = state => state.get('global').persistence;
 const makeRememberUserSelector = () => createSelector(
   persistenceSelector,
@@ -47,9 +33,7 @@ export {
   makeSelectedSessionNodeSelector,
   makeSelectedSessionCollectionSelector,
   makeSelectedSessionSelector,
-  makeUserSessionCreateError,
   makeUserSessionSelector,
-  makeUserCreateError,
   persistenceSelector,
   makeRememberUserSelector,
 };

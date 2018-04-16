@@ -1,5 +1,12 @@
 import { getHeaders } from '~/utils/HeaderManager';
-import ModelMap from '~/utils/rest-model/ModelMap';
+import {
+  ModelMap,
+  defaultExtensions,
+  WaitableActionsCreator,
+} from 'reduxtful';
+import axios from 'axios';
+import { Observable } from 'rxjs';
+import { createSelector } from 'reselect';
 
 const responseMiddleware = (response, info) => {
   if(response.status === 200 && response.data.error){
@@ -9,51 +16,57 @@ const responseMiddleware = (response, info) => {
   return Promise.resolve(response);
 };
 
+const epics = {
+  axios,
+  Observable,
+  getHeaders,
+  responseMiddleware,
+}
+
 const modelsDefine = {
   api: {
     url: '/api',
-    names: { singular: 'api', plural: 'apis' },
+    names: { model: 'api', member: 'api', collection: 'apis' },
     singleton: true,
+    config: {
+      // actionNoRedundantBody: true,
+      getId: data => 'api', // data.user_id,
+    },
     extensionConfigs: {
-      epics: {
-        getHeaders,
-        responseMiddleware,
-      },
+      epics,
     },
   },
   sessions: {
     url: '/api/sessions',
-    names: { singular: 'session', plural: 'sessions' },
+    names: { model: 'session', member: 'session', collection: 'sessions' },
+    config: {
+      // actionNoRedundantBody: true,
+      getId: data => 'me', // data.user_id,
+    },
     extensionConfigs: {
-      epics: {
-        getHeaders,
-        responseMiddleware,
-      },
+      epics,
       selectors: {
+        createSelector,
         baseSelector: state => state.get('global').sessions,
-      },
-      reducers: {
-        getId: action => 'me', // action.data.user_id,
       },
     },
   },
   users: {
     url: '/api/users',
-    names: { singular: 'user', plural: 'users' },
+    names: { model: 'user', member: 'user', collection: 'users' },
+    config: {
+      // actionNoRedundantBody: true,
+      getId: data => data.id,
+    },
     extensionConfigs: {
-      epics: {
-        getHeaders,
-        responseMiddleware,
-      },
+      epics,
       selectors: {
+        createSelector,
         baseSelector: state => state.get('global').users,
-      },
-      reducers: {
-        getId: action => action.data.id,
       },
     },
   },
 };
 
-const modelMap = new ModelMap('global', modelsDefine);
+const modelMap = new ModelMap('global', modelsDefine, defaultExtensions.concat([WaitableActionsCreator]));
 export default modelMap;

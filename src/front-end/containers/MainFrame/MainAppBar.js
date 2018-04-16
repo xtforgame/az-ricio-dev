@@ -22,7 +22,7 @@ import { messages } from '../App/translation';
 import modelMap from '~/containers/App/modelMap';
 
 const {
-  clearSession,
+  clearSessionCache,
 } = modelMap.actions;
 
 const styles = theme => ({
@@ -41,7 +41,7 @@ const styles = theme => ({
 
 class MainAppBar extends React.Component {
   render(){
-    const { logout, clearSession, classes, intl, onToggleMenu = () => {} } = this.props;
+    const { logout, clearSessionCache, classes, intl, onToggleMenu = () => {} } = this.props;
     return (
       <div className={classes.root}>
         <AppBar position="fixed">
@@ -53,7 +53,7 @@ class MainAppBar extends React.Component {
               <FormattedMessage {...messages.appTitle} />
             </Typography>
             <LocaleDropdown />
-            <Button color="inherit" onClick={clearSession}>
+            <Button color="inherit" onClick={() => clearSessionCache('me')}>
               <FormattedMessage {...messages.logout} />
             </Button>
           </Toolbar>
@@ -67,7 +67,7 @@ class MainAppBar extends React.Component {
 export default compose(
   connect(
     state => ({}),
-    { clearSession }
+    { clearSessionCache }
   ),
   injectIntl,
   withStyles(styles),

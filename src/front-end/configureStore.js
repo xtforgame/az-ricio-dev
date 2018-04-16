@@ -5,6 +5,7 @@ import { Map as ImmutableMap } from 'immutable';
 
 import { configureStore } from 'rrw-module';
 import RrwExEpic from 'rrw-module/extensions/epic';
+import createReduxWaitForMiddleware from 'redux-wait-for-action';
 
 import languageProviderReducer from '~/containers/LanguageProvider/reducer';
 
@@ -34,6 +35,6 @@ export default (initialState, history) => configureStore(staticReducers, Immutab
       },
     },
   ],
-  middlewares: [routerMiddleware(history), localStorageMiddleware],
+  middlewares: [routerMiddleware(history), localStorageMiddleware, createReduxWaitForMiddleware()],
   compose: composeEnhancers,
 });

@@ -37,15 +37,16 @@ import modelMap from '~/containers/App/modelMap';
 import {
   makeUserSessionSelector,
   makeRememberUserSelector,
-  makeUserSessionCreateError,
-  makeUserCreateError,
 } from '~/containers/App/selectors';
 
 const {
-  createSession,
-  createSessionCancel,
-  createUser,
-  createUserCancel,
+  postSessions,
+  postUsers,
+} = modelMap.waitableActions;
+
+const {
+  cancelPostSessions,
+  cancelPostUsers,
 } = modelMap.actions;
 
 const styles = theme => ({
@@ -86,6 +87,8 @@ class Login extends React.Component {
     super(props);
     this.state = {
       tabIndex: 0,
+      loginError: null,
+      postUsersError: null,
     };
   }
 
@@ -102,7 +105,7 @@ class Login extends React.Component {
   };
 
   render(){
-    let { location, intl, createSession, createUser, session, rememberUser, loginError, createUserError, classes } = this.props;
+    let { location, intl, postSessions, postUsers, session, rememberUser, classes } = this.props;
     let fromPath = location.state && location.state.from.pathname;
     const wrongUsernameOrPassword = formatMessage(intl, messages.wrongUsernameOrPassword, {});
     const usernameIsTaken = formatMessage(intl, messages.usernameIsTaken, {});
@@ -121,15 +124,20 @@ class Login extends React.Component {
       rememberMe(rememberUser);
       // popup('/auth-popup.html');
       // return ;
-      createSession({
+      postSessions({
         auth_type: 'basic',
         username,
         password,
+      })
+      .catch(action => {
+        this.setState({
+          loginError: action.data.error,
+        });
       });
     };
 
     const register = (username, password) => {
-      createUser({
+      postUsers({
         name: username,
         privilege: 'admin',
         accountLinks: [{
@@ -137,8 +145,12 @@ class Login extends React.Component {
           username,
           password,
         }],
-      },
-      {})
+      })
+      .catch(action => {
+        this.setState({
+          postUsersError: action.data.error,
+        });
+      });
     };
 
     return (
@@ -165,15 +177,15 @@ class Login extends React.Component {
             disabled={true}
           >
             <LoginForm
-              usernameError={!this.state.tabIndex && !!loginError}
-              passwordError={!this.state.tabIndex && loginError && wrongUsernameOrPassword}
+              usernameError={!this.state.tabIndex && !!this.state.loginError}
+              passwordError={!this.state.tabIndex && this.state.loginError && wrongUsernameOrPassword}
               defaultRememberMe={rememberUser}
               onSubmit={login}
               handleForgotPassword={() => this.swipeTo(1)}
               handleCreateAccount={() => this.swipeTo(1)}
             />
             <RegistrationForm
-              usernameError={this.state.tabIndex && createUserError && usernameIsTaken}
+              usernameError={this.state.tabIndex && this.state.postUsersError && usernameIsTaken}
               onSubmit={register}
               comfirmUserAgreement={true}
             />
@@ -188,18 +200,16 @@ class Login extends React.Component {
 const mapStateToProps = createStructuredSelector({
   session: makeUserSessionSelector(),
   rememberUser: makeRememberUserSelector(),
-  loginError: makeUserSessionCreateError(),
-  createUserError: makeUserCreateError(),
 });
 
 export default compose(
   connect(
     mapStateToProps,
     {
-      createSession,
-      createSessionCancel,
-      createUser,
-      createUserCancel,
+      postSessions,
+      cancelPostSessions,
+      postUsers,
+      cancelPostUsers,
       rememberMe,
     }
   ),
