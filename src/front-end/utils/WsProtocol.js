@@ -114,7 +114,15 @@ export default class WsProtocol extends Base {
     // this.wsPeer.listenNative('close', cb);
 
     return this.open()
-    .then(() => this.send(request));
+    .then(() => new Promise((resolve) => {
+      // we support that server will close the connection
+      const f = (e) => {
+        this.nativeEvents.removeListener('close', f);
+        resolve(e);
+      };
+      this.nativeEvents.addListener('close', f);
+      this.send(request);
+    }));
   }
 
   joinChannels(channels = []) {

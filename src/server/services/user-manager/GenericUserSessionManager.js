@@ -7,9 +7,8 @@ export class UserInfo extends LoggedInUser {
   constructor({
     uid,
     data = {},
-    sessions = {},
   }) {
-    super({ uid, data, sessions });
+    super({ uid, data });
     this.data.channelMap = null;
   }
 
@@ -18,14 +17,16 @@ export class UserInfo extends LoggedInUser {
   }
 
   mapSession(inFn) {
-    const { sessions } = this;
-    // console.log('sessions :', sessions);
     const fn = inFn || (() => {});
-    return Object.keys(sessions).map(key => fn(key, sessions[key], sessions));
+    const result = [];
+    this.sessionMap.forEach((...args) => {
+      result.push(fn(...args));
+    });
+    return result;
   }
 
   send(msg) {
-    return this.mapSession((_, session, sessions) => session.data.rcPeer.send(msg));
+    return this.mapSession(session => session.data.rcPeer.send(msg));
   }
 
   joinChannel(channelArray) {
