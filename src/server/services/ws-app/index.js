@@ -30,7 +30,12 @@ export default class WsApp extends ServiceBase {
     this.appConfig = {
       PeerClass,
       router: this.router,
-      userSessionManager: this.userSessionManager,
+      rcPeerManager: {
+        wsPeerManager: {
+          wsPeerMap: new Map(),
+        },
+        userSessionManager: this.userSessionManager,
+      },
     };
   }
 

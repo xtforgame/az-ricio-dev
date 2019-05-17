@@ -13,7 +13,7 @@ export default class PeerClass extends RicioPeer {
     return this.session && this.session.user_id;
   }
 
-  broadcast = msg => Promise.all(this.userSessionManager.mapUser((_, user) => user.send(msg)));
+  broadcast = msg => Promise.all(this.rcPeerManager.userSessionManager.mapUser((_, user) => user.send(msg)));
 
   channelBroadcast = (channel, msg, options = {}) => {
     if (Array.isArray(channel)) {
@@ -24,7 +24,7 @@ export default class PeerClass extends RicioPeer {
       filter,
     } = options;
 
-    const channelMetadata = this.userSessionManager.chManager.getChannelMetadata(channel);
+    const channelMetadata = this.rcPeerManager.userSessionManager.chManager.getChannelMetadata(channel);
     if (!channelMetadata) {
       return Promise.reject(new Error('Channel not found'));
     }
