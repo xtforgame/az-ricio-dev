@@ -1,46 +1,12 @@
 /* eslint-disable no-param-reassign, no-console */
-import { LoggedInUser, UserSessionManager } from 'login-session-mgr';
+import { UserSessionManager } from 'login-session-mgr';
 import ChannelManager from './ChannelManager';
 import fakeUserManager from '../../utils/fakeUserManager';
+import UserInfo from '~/websocket/UserInfo';
 
-export class UserInfo extends LoggedInUser {
-  constructor({
-    uid,
-    data = {},
-  }) {
-    super({ uid, data });
-    this.data.channelMap = null;
-  }
-
-  get userSessionManager() {
-    return this.data.userSessionManager;
-  }
-
-  mapSession(inFn) {
-    const fn = inFn || (() => {});
-    const result = [];
-    this.sessionMap.forEach((...args) => {
-      result.push(fn(...args));
-    });
-    return result;
-  }
-
-  send(msg) {
-    return this.mapSession(session => session.data.rcPeer.send(msg));
-  }
-
-  joinChannel(channelArray) {
-    return this.userSessionManager.peerJoinChannel(this, channelArray);
-  }
-
-  leaveChannel(channelArray) {
-    return this.userSessionManager.peerLeaveChannel(this, channelArray);
-  }
-
-  inChannel(channel) {
-    return this.userSessionManager.isPeerInChannel(this, channel);
-  }
-}
+export {
+  UserInfo,
+};
 
 export default class GenericUserSessionManager {
   constructor() {
