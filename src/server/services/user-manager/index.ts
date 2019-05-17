@@ -8,6 +8,7 @@ export default class UserManager extends ServiceBase {
 
   static $inject = [];
 
+  userSessionManager : GenericUserSessionManager;
   constructor() {
     super();
     this.userSessionManager = new GenericUserSessionManager();

@@ -5,3 +5,5 @@ export { default as UserInfo } from './UserInfo';
 
 export { default as WsPeer } from './WsPeer';
 export { default as WsPeerManager } from './WsPeerManager';
+
+export { WsCtx } from './WsCtx';
