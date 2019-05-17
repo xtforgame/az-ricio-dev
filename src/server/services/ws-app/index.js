@@ -4,7 +4,7 @@ import ServiceBase from '../ServiceBase';
 import getRedirectApp from './getRedirectApp';
 import runWsServer from './runWsServer';
 import GenericRouter from './GenericRouter';
-import PeerClass from './PeerClass';
+import PeerClass from '~/websocket/PeerClass';
 import { wsPort, wssPort } from '../../common/core/config';
 
 export default class WsApp extends ServiceBase {

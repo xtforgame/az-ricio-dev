@@ -62,7 +62,7 @@ export default class PreprocessRouter extends RouterBase {
     }));
 
     router.get('/users', (ctx, next) => {
-      const users = this.userSessionManager.mapUser((_, { uid, data: { name = 'noname', isBusy = false } }) => ({
+      const users = this.userSessionManager.mapUser(({ uid, data: { name = 'noname', isBusy = false } }) => ({
         uid,
         name,
         isBusy,
