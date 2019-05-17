@@ -1,8 +1,15 @@
 /* eslint-disable no-console */
+import { AzWsMsgBody } from 'ricio/ws';
 import RouterBase from '../core/router-base';
+import GenericUserSessionManager from '../services/user-manager/GenericUserSessionManager';
+import {
+  WsCtx,
+} from '~/websocket/index';
 
 export default class ChannelRouter extends RouterBase {
-  handleJoinChannels(ctx, channels) {
+  userSessionManager!: GenericUserSessionManager;
+
+  handleJoinChannels(ctx : WsCtx, channels) {
     const user = ctx.rcPeer.getUser();
     if (!user) {
       return;
@@ -25,7 +32,7 @@ export default class ChannelRouter extends RouterBase {
     });
   }
 
-  handleLeaveChannels(ctx, channels) {
+  handleLeaveChannels(ctx : WsCtx, channels) {
     const user = ctx.rcPeer.getUser();
     if (!user) {
       return;
@@ -50,7 +57,7 @@ export default class ChannelRouter extends RouterBase {
   }
 
   setupRoutes({ router }) {
-    router.post('/joined-channels', (ctx, next) => ctx.body.json().then((data) => {
+    router.post('/joined-channels', (ctx : WsCtx, next) => (<AzWsMsgBody>ctx.body).json().then((data) => {
       const user = ctx.rcPeer.getUser();
       if (!user) {
         return ctx.rcResponse.throw(401);
@@ -64,7 +71,7 @@ export default class ChannelRouter extends RouterBase {
       });
     }));
 
-    router.delete('/joined-channels', (ctx, next) => ctx.body.json().then((data) => {
+    router.delete('/joined-channels', (ctx : WsCtx, next) => (<AzWsMsgBody>ctx.body).json().then((data) => {
       const user = ctx.rcPeer.getUser();
       if (!user) {
         return ctx.rcResponse.throw(401);
@@ -77,7 +84,7 @@ export default class ChannelRouter extends RouterBase {
       });
     }));
 
-    router.send('/chs/:channelId/msgs', (ctx, next) => ctx.body.json().then((data) => {
+    router.send('/chs/:channelId/msgs', (ctx : WsCtx, next) => (<AzWsMsgBody>ctx.body).json().then((data) => {
       const user = ctx.rcPeer.getUser();
       if (!user) {
         return ctx.rcResponse.throw(401);
@@ -109,9 +116,9 @@ export default class ChannelRouter extends RouterBase {
       // ctx.rcPeer.getWsPeer().close(1002, 'xxxx');
     }));
 
-    router.error('/', (ctx, next) => next());
+    router.error('/', (ctx : WsCtx, next) => next());
 
-    router.close('/', (ctx, next) => {
+    router.close('/', (ctx : WsCtx, next) => {
       const user = ctx.rcPeer.getUser();
       if (!user) {
         return next();
