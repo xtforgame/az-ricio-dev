@@ -9,7 +9,7 @@ import {
   SessionUidType,
 } from './common';
 
-export default class UserInfo<
+export default class SessionInfo<
   SessionUid = SessionUidType
 > extends LoggedInSession<
   SessionUid
@@ -17,9 +17,12 @@ export default class UserInfo<
   SessionUid
 > {
   data : any;
+  user?: any;
   constructor({
     uid,
   } : LoggedInSessionConfig<SessionUid>) {
     super({ uid });
+    this.data = {};
+    this.user = null;
   }
 }

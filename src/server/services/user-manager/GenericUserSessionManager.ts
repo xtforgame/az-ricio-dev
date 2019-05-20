@@ -6,16 +6,17 @@ import {
   ChannelUidType,
   SessionInfo,
   UserInfo,
-  PeerClass,
+  IRcPeerEx,
+  PeerClassType,
+
+  ChannelManager,
+
   WsPeer,
   WsPeerManager,
 } from '~/websocket/index';
-import ChannelManager from './ChannelManager';
 import fakeUserManager from '../../utils/fakeUserManager';
 
-export type MyPeer = PeerClass<WsPeer, WsPeerManager<WsPeer>>;
-
-export default class GenericUserSessionManager {
+export default class GenericUserSessionManager<PeerClass extends IRcPeerEx<WsPeer, WsPeerManager<WsPeer>> = PeerClassType> {
   userSessionCounters : any;
   chManager : ChannelManager<ChannelUidType, UserUidType, UserInfo>;
   userSessionMgr : UserSessionManager<
@@ -24,12 +25,12 @@ export default class GenericUserSessionManager {
     UserUidType,
     UserInfo
   >;
-  allPeers : Map<any, MyPeer>;
+  allPeers : Map<any, PeerClass>;
 
   constructor() {
     this.userSessionCounters = {};
     this.chManager = new ChannelManager<ChannelUidType, UserUidType, UserInfo>();
-    this.allPeers = new Map<any, MyPeer>();
+    this.allPeers = new Map<any, PeerClass>();
     this.userSessionMgr = new UserSessionManager<
       SessionUidType,
       SessionInfo,
@@ -64,14 +65,14 @@ export default class GenericUserSessionManager {
     // }, 2000);
   }
 
-  addPeer(rcPeer : MyPeer) {
+  addPeer(rcPeer : PeerClass) {
     const wsPeer = rcPeer.getWsPeer();
     if (wsPeer) {
       this.allPeers.set(rcPeer.getWsPeer(), rcPeer);
     }
   }
 
-  loginWithToken(rcPeer : MyPeer, token : any) {
+  loginWithToken(rcPeer : PeerClass, token : any) {
     // const session = fakeUserManager.authenticateFromToken(data.token);
     const session = fakeUserManager.verify(token);
     if (session) {
@@ -91,7 +92,7 @@ export default class GenericUserSessionManager {
     return Promise.reject();
   }
 
-  loginWithPassword(rcPeer : MyPeer, body : any) {
+  loginWithPassword(rcPeer : PeerClass, body : any) {
     const { auth_type, password, username } = body;
     return Promise.resolve(fakeUserManager.authenticate(auth_type, username, password));
   }
@@ -149,14 +150,14 @@ export default class GenericUserSessionManager {
     return (this.chManager.getUserMetadata(user) || []).map((value : any) => value);
   }
 
-  removePeer(rcPeer : MyPeer) {
+  removePeer(rcPeer : PeerClass) {
     const wsPeer = rcPeer.getWsPeer();
     if (wsPeer) {
       this.allPeers.delete(rcPeer.getWsPeer());
     }
   }
 
-  logout(rcPeer : MyPeer, reason: LogoutReason = '') {
+  logout(rcPeer : PeerClass, reason: LogoutReason = '') {
     this.removePeer(rcPeer);
     const sessionId = rcPeer.getSessionId();
     if (sessionId) {
@@ -166,7 +167,7 @@ export default class GenericUserSessionManager {
     return Promise.resolve();
   }
 
-  unexpectedLogout(rcPeer : MyPeer) {
+  unexpectedLogout(rcPeer : PeerClass) {
     console.log('unexpectedLogout');
     this.removePeer(rcPeer);
     const sessionId = rcPeer.getSessionId();
@@ -180,7 +181,7 @@ export default class GenericUserSessionManager {
     console.log('================ [debug] ReportPeerInfo ================');
     console.log('================         Users          ================');
     this.allPeers.forEach((rcPeer, key, map) => {
-      rcPeer.debugPrintProfile();
+      (<PeerClass><any>rcPeer).debugPrintProfile();
     });
     console.log('================        Channels        ================');
     this.chManager.debugPrintProfile();

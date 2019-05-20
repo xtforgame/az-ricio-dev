@@ -1,12 +1,5 @@
 /* eslint-disable no-console */
 import { AzWsMessageCtx } from 'ricio/ws/server/api';
-import WsPeer from './WsPeer';
-import WsPeerManager from './WsPeerManager';
-import PeerClass from './PeerClass';
+import { PeerClassType } from './PeerClass';
 
-export type WsCtx = AzWsMessageCtx<
-  PeerClass<
-    WsPeer,
-    WsPeerManager<WsPeer>
-  >
->;
+export type WsCtx = AzWsMessageCtx<PeerClassType>;

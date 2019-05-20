@@ -1,48 +1,94 @@
 /* eslint-disable no-console */
-import RicioPeer, { IRcPeerManager } from 'ricio/RicioPeer';
-import { IWsPeer, IWsPeerManager } from 'ricio/WsPeer';
+import { UserSessionManager } from 'login-session-mgr';
+import RicioPeer, { IRcPeerManager, IRcPeer } from 'ricio/RicioPeer';
+import { IWsPeer, IWsPeerManager, EmptyWsPeerManager } from 'ricio/WsPeer';
 
 import {
   SessionUidType,
   UserUidType,
+  ChannelUidType,
 } from '~/websocket/common';
+import SessionInfo from './SessionInfo';
+import UserInfo from './UserInfo';
+import ChannelManager from './ChannelManager';
+
+import WsPeer from './WsPeer';
+import WsPeerManager from './WsPeerManager';
 
 let hashCounter = 0;
+
+export interface IRcPeerEx<WsPeer extends IWsPeer, WsPeerManager extends IWsPeerManager<WsPeer>> extends IRcPeer<WsPeer, WsPeerManager> {
+  getSessionId() : SessionUidType | null;
+  debugPrintProfile() : void;
+}
+
+export interface IRcPeerExClass {
+  new <WsPeer extends IWsPeer, WsPeerManager extends IWsPeerManager<WsPeer>>(...args : any[]): IRcPeerEx<WsPeer, WsPeerManager>;
+}
 
 export default class PeerClass<WsPeer extends IWsPeer, WsPeerManager extends IWsPeerManager<WsPeer>>
   extends RicioPeer<WsPeer, WsPeerManager>
 {
   hash : number;
+  rawSession : any;
+  sessionId : SessionUidType | null;
+  session : SessionInfo<SessionUidType> | null;
 
   constructor(rcPeerManager: IRcPeerManager<WsPeer, WsPeerManager>, option: any) {
     super(rcPeerManager, option);
     this.hash = ++hashCounter;
+
+    this.sessionId = null;
+    this.session = null;
+  }
+
+  getRawSession() {
+    return this.rawSession;
+  }
+
+  getSessionId() : SessionUidType | null {
+    return this.sessionId;
+  }
+
+  getSession() : SessionInfo<SessionUidType> | null {
+    return this.session;
+  }
+
+  setSession(session : SessionInfo<SessionUidType>) {
+    this.session = session;
+    this.sessionId = session.uid;
+    this.rawSession = session.data.session;
+  }
+
+  getUser<UInfo = UserInfo>() : UInfo | null {
+    return this.session && <UInfo>this.session.user;
   }
 
   getUserId() : UserUidType {
-    return this.session && this.session.user_id;
+    return this.rawSession && this.rawSession.user_id;
   }
 
   broadcast = (msg : any) => Promise.all(
     (<any>this.rcPeerManager).userSessionManager.mapUser(((user : any) => user.send(msg)))
-  );
+  )
 
-  channelBroadcast = (channel : any, msg : any, options : any = {}) : any => {
-    if (Array.isArray(channel)) {
-      return Promise.all(channel.map(ch => this.channelBroadcast(ch, msg, options)));
+  getChannelManager = () => <ChannelManager<ChannelUidType, UserUidType, UserInfo>>(<any>this.rcPeerManager).userSessionManager.chManager;
+
+  channelBroadcast = (channelUid : ChannelUidType, msg : any, options : any = {}) : any => {
+    if (Array.isArray(channelUid)) {
+      return Promise.all(channelUid.map(ch => this.channelBroadcast(ch, msg, options)));
     }
     const {
       includeSender = false,
       filter,
     } = options;
 
-    const channelMetadata = (<any>this.rcPeerManager).userSessionManager.chManager.getChannelMetadata(channel);
+    const channelMetadata = this.getChannelManager().getChannelMetadata(channelUid);
     if (!channelMetadata) {
       return Promise.reject(new Error('Channel not found'));
     }
 
-    const me = this.getUser();
-    const myUserId = me && me.uid;
+    const myUserId = this.getUserId();
     if (!myUserId) {
       return Promise.reject(new Error('User not found'));
     }
@@ -59,3 +105,5 @@ export default class PeerClass<WsPeer extends IWsPeer, WsPeerManager extends IWs
     console.log(`user: ${user ? /* user.uid */ user.data.name : '<Unauthenticated>'} (hash: ${this.hash})`);
   }
 }
+
+export type PeerClassType = PeerClass<WsPeer, WsPeerManager<WsPeer>>;

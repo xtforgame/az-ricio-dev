@@ -129,7 +129,6 @@ export class UserMetadata<UserUid, UserInfo extends ChannelUser<UserUid>, Channe
   }
 }
 
-
 export default class ChannelManager<ChannelUid, UserUid, UserInfo extends ChannelUser<UserUid>> {
   channelMap : Map<ChannelUid, ChannelMetadata<UserUid, UserInfo>>;
   userMap : Map<UserUid, UserMetadata<UserUid, UserInfo, ChannelUid>>;
