@@ -26,3 +26,5 @@ export default class SessionInfo<
     this.user = null;
   }
 }
+
+export type SessionInfoType = SessionInfo<SessionUidType>;

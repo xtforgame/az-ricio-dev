@@ -11,3 +11,4 @@ export { WsCtx } from './WsCtx';
 
 export * from './ChannelManager';
 export { default as ChannelManager } from './ChannelManager';
+export { default as GenericUserSessionManager } from './GenericUserSessionManager';

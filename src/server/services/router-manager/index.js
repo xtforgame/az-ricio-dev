@@ -32,7 +32,7 @@ export default class RouterManager extends ServiceBase {
     ]
     .map(Router => new Router({
       mailer: this.mailer,
-      userSessionManager: userManager.userSessionManager,
+      gusm: userManager.gusm,
     }).setupRoutes(httpApp.appConfig));
   }
 

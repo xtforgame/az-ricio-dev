@@ -11,12 +11,14 @@ export default class WsRouterManager extends ServiceBase {
 
   static $inject = ['wsApp', 'userManager'];
 
+  routers : any;
+
   constructor(wsApp, userManager) {
     super();
 
     this.routers = [PreprocessRouter, ChannelRouter]
       .map(Router => new Router({
-        userSessionManager: userManager.userSessionManager,
+        gusm: userManager.gusm,
       }).setupRoutes(wsApp.appConfig));
   }
 

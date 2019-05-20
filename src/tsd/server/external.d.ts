@@ -18,3 +18,6 @@ declare module 'ws' {
     emit(event: string, ...args: any[]): boolean;
   }
 }
+
+declare module 'config';
+declare module 'common/core/config';

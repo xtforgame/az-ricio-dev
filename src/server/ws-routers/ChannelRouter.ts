@@ -1,23 +1,21 @@
 /* eslint-disable no-console */
 import { AzWsMsgBody } from 'ricio/ws';
-import RouterBase from '../core/router-base';
-import GenericUserSessionManager from '../services/user-manager/GenericUserSessionManager';
+import { GenericUserSessionManagerType } from '~/services/user-manager/GenericUserSessionManager';
 import {
   WsCtx,
 } from '~/websocket/index';
+import RouterBase from './RouterBase';
 
 export default class ChannelRouter extends RouterBase {
-  userSessionManager!: GenericUserSessionManager;
-
-  handleJoinChannels(ctx : WsCtx, channels) {
+  handleJoinChannels(ctx : WsCtx, channelUids : string[]) {
     const user = ctx.rcPeer.getUser();
     if (!user) {
       return;
     }
-    user.joinChannel(channels);
+    user.joinChannel(channelUids);
 
-    // this.userSessionManager.getPeerChannelList(user);
-    channels.forEach((channelId) => {
+    // this.gusm.getPeerChannelList(user);
+    channelUids.forEach((channelId) => {
       ctx.rcPeer.channelBroadcast(channelId, {
         path: `/chs/${channelId}/user-joined`,
         body: {
@@ -32,13 +30,13 @@ export default class ChannelRouter extends RouterBase {
     });
   }
 
-  handleLeaveChannels(ctx : WsCtx, channels) {
+  handleLeaveChannels(ctx : WsCtx, channelUids : string[]) {
     const user = ctx.rcPeer.getUser();
     if (!user) {
       return;
     }
-    // this.userSessionManager.getPeerChannelList(user);
-    channels.forEach((channelId) => {
+    // this.gusm.getPeerChannelList(user);
+    channelUids.forEach((channelId) => {
       console.log('channelId :', channelId);
       ctx.rcPeer.channelBroadcast(channelId, {
         path: `/chs/${channelId}/user-left`,
@@ -53,7 +51,7 @@ export default class ChannelRouter extends RouterBase {
       .catch((e) => {});
     });
 
-    user.leaveChannel(channels);
+    user.leaveChannel(channelUids);
   }
 
   setupRoutes({ router }) {
@@ -123,7 +121,7 @@ export default class ChannelRouter extends RouterBase {
       if (!user) {
         return next();
       }
-      this.handleLeaveChannels(ctx, this.userSessionManager.getPeerChannelList(user));
+      this.handleLeaveChannels(ctx, this.gusm.getPeerChannelList(user));
       return next();
     });
   }

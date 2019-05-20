@@ -5,7 +5,11 @@ import getRedirectApp from './getRedirectApp';
 import runWsServer from './runWsServer';
 import GenericRouter from './GenericRouter';
 import PeerClass from '~/websocket/PeerClass';
-import { wsPort, wssPort } from '../../common/core/config';
+import {
+  WsPeer,
+  WsPeerManager,
+} from '~/websocket';
+import { wsPort, wssPort } from 'common/core/config';
 
 export default class WsApp extends ServiceBase {
   static $name = 'wsApp';
@@ -14,10 +18,16 @@ export default class WsApp extends ServiceBase {
 
   static $inject = ['envCfg', 'userManager'];
 
+  credentials : any;
+  gusm : any;
+  app : any;
+  router : any;
+  appConfig : any;
+
   constructor(envCfg, userManager) {
     super();
     /* let credentials = */this.credentials = envCfg.credentials;
-    this.userSessionManager = userManager.userSessionManager;
+    this.gusm = userManager.gusm;
     this.app = new WsKoaStyleApp();
     this.router = new GenericRouter();
     this.app.use((ctx, next) => next().catch((e) => {
@@ -31,10 +41,8 @@ export default class WsApp extends ServiceBase {
       PeerClass,
       router: this.router,
       rcPeerManager: {
-        wsPeerManager: {
-          wsPeerMap: new Map(),
-        },
-        userSessionManager: this.userSessionManager,
+        wsPeerManager: new WsPeerManager(),
+        gusm: this.gusm,
       },
     };
   }

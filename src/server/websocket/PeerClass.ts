@@ -8,8 +8,8 @@ import {
   UserUidType,
   ChannelUidType,
 } from '~/websocket/common';
-import SessionInfo from './SessionInfo';
-import UserInfo from './UserInfo';
+import SessionInfo, { SessionInfoType } from './SessionInfo';
+import UserInfo, { UserInfoType } from './UserInfo';
 import ChannelManager from './ChannelManager';
 
 import WsPeer from './WsPeer';
@@ -50,7 +50,7 @@ export default class PeerClass<WsPeer extends IWsPeer, WsPeerManager extends IWs
     return this.sessionId;
   }
 
-  getSession() : SessionInfo<SessionUidType> | null {
+  getSession() : SessionInfoType | null {
     return this.session;
   }
 
@@ -60,8 +60,8 @@ export default class PeerClass<WsPeer extends IWsPeer, WsPeerManager extends IWs
     this.rawSession = session.data.session;
   }
 
-  getUser<UInfo = UserInfo>() : UInfo | null {
-    return this.session && <UInfo>this.session.user;
+  getUser() : UserInfoType | null {
+    return this.session && <UserInfoType>this.session.user;
   }
 
   getUserId() : UserUidType {
@@ -69,10 +69,10 @@ export default class PeerClass<WsPeer extends IWsPeer, WsPeerManager extends IWs
   }
 
   broadcast = (msg : any) => Promise.all(
-    (<any>this.rcPeerManager).userSessionManager.mapUser(((user : any) => user.send(msg)))
+    (<any>this.rcPeerManager).gusm.mapUser(((user : any) => user.send(msg)))
   )
 
-  getChannelManager = () => <ChannelManager<ChannelUidType, UserUidType, UserInfo>>(<any>this.rcPeerManager).userSessionManager.chManager;
+  getChannelManager = () => <ChannelManager<ChannelUidType, UserUidType, UserInfo>>(<any>this.rcPeerManager).gusm.chManager;
 
   channelBroadcast = (channelUid : ChannelUidType, msg : any, options : any = {}) : any => {
     if (Array.isArray(channelUid)) {

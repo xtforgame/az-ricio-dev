@@ -11,7 +11,7 @@ import {
   UserUidType,
   SessionUidType,
 } from './common';
-import RealSessionInfo from './SessionInfo';
+import RealSessionInfo, { SessionInfoType } from './SessionInfo';
 
 export default class UserInfo<
   UserUid = UserUidType,
@@ -35,8 +35,8 @@ export default class UserInfo<
     this.data.channelMap = null;
   }
 
-  get userSessionManager() {
-    return this.data.userSessionManager;
+  get gusm() {
+    return this.data.gusm;
   }
 
   castSession(s : SessionInfo) : RealSessionInfo {
@@ -63,14 +63,16 @@ export default class UserInfo<
   }
 
   joinChannel(channelArray : any) {
-    return this.userSessionManager.peerJoinChannel(this, channelArray);
+    return this.gusm.peerJoinChannel(this, channelArray);
   }
 
   leaveChannel(channelArray : any) {
-    return this.userSessionManager.peerLeaveChannel(this, channelArray);
+    return this.gusm.peerLeaveChannel(this, channelArray);
   }
 
   inChannel(channel : any) {
-    return this.userSessionManager.isPeerInChannel(this, channel);
+    return this.gusm.isPeerInChannel(this, channel);
   }
 }
+
+export type UserInfoType = UserInfo<UserUidType, SessionUidType, SessionInfoType>;

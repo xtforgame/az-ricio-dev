@@ -11,10 +11,10 @@ export default class UserManager extends ServiceBase {
 
   static $inject = [];
 
-  userSessionManager : GenericUserSessionManager<PeerClassType>;
+  gusm : GenericUserSessionManager<PeerClassType>;
   constructor() {
     super();
-    this.userSessionManager = new GenericUserSessionManager<PeerClassType>();
+    this.gusm = new GenericUserSessionManager<PeerClassType>();
   }
 
   onStart() {
