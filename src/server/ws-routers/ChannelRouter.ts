@@ -121,8 +121,21 @@ export default class ChannelRouter extends RouterBase {
       if (!user) {
         return next();
       }
-      this.handleLeaveChannels(ctx, this.gusm.getPeerChannelList(user));
+      if (user.sessionMap.size === 1) {
+        // this is the last one session, leave all channels
+        this.handleLeaveChannels(ctx, this.gusm.getPeerChannelList(user));
+      }
       return next();
     });
+
+    router.post('/sessions', (ctx, next) => ctx.body.json().then((data) => {
+      const user = ctx.rcPeer.getUser();
+      if (!user) {
+        return ctx.rcResponse.throw(401);
+      }
+
+      const rooms = ['lobby'];
+      return this.handleJoinChannels(ctx, rooms.map(room => `room:${room}`));
+    }));
   }
 }

@@ -9,16 +9,24 @@ export default class WsRouterManager extends ServiceBase {
 
   static $type = 'service';
 
-  static $inject = ['wsApp', 'userManager'];
+  static $inject = ['wsApp', 'userManager', 'botManager'];
+
+  static $funcDeps = {
+    start: ['botManager'],
+  };
 
   routers : any;
 
-  constructor(wsApp, userManager) {
+  constructor(wsApp, userManager, botManager) {
     super();
 
-    this.routers = [PreprocessRouter, ChannelRouter]
+    this.routers = [
+      PreprocessRouter,
+      ChannelRouter,
+    ]
       .map(Router => new Router({
         gusm: userManager.gusm,
+        botManager,
       }).setupRoutes(wsApp.appConfig));
   }
 

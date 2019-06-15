@@ -2,6 +2,7 @@ import { GenericUserSessionManagerType } from '~/services/user-manager/GenericUs
 
 export default class RouterBase {
   gusm!: GenericUserSessionManagerType;
+  botManager!: any;
 
   constructor(_props) {
     const props = _props || {};

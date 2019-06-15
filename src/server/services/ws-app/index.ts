@@ -1,15 +1,15 @@
 /* eslint-disable no-console */
+import GenericRouter from 'common/core/GenericRouter';
 import { WsApp as WsKoaStyleApp } from 'ricio/node';
 import ServiceBase from '../ServiceBase';
 import getRedirectApp from './getRedirectApp';
 import runWsServer from './runWsServer';
-import GenericRouter from './GenericRouter';
 import PeerClass from '~/websocket/PeerClass';
 import {
   WsPeer,
   WsPeerManager,
 } from '~/websocket';
-import { wsPort, wssPort } from 'common/core/config';
+import { wsPort, wssPort } from 'common/config';
 
 export default class WsApp extends ServiceBase {
   static $name = 'wsApp';

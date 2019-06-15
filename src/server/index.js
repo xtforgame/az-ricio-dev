@@ -9,6 +9,7 @@ import RouterManager from '~/services/router-manager';
 import Mailer from '~/services/mailer';
 import WsApp from '~/services/ws-app';
 import WsRouterManager from '~/services/ws-router-manager';
+import BotManager from '~/services/bot-manager';
 import {
   runningMode,
 } from 'common/config';
@@ -24,6 +25,7 @@ class Server {
       Mailer,
       WsApp,
       WsRouterManager,
+      BotManager,
     ]);
 
     this.ioc.digest();

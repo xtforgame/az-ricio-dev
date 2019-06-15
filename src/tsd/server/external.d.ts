@@ -20,4 +20,5 @@ declare module 'ws' {
 }
 
 declare module 'config';
-declare module 'common/core/config';
+declare module 'common/config';
+declare module 'generic-router';
